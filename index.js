@@ -23,7 +23,7 @@ app.post("/register", async (req, res) => {
   // DB에 넣어줌
 
   const user = new User(req.body);
-
+  // save 하기 전에 암호화를 해줘야 함
   await user
     .save()
     .then(() => {
