@@ -40,4 +40,31 @@ app.post("/register", async (req, res) => {
       });
     });
 });
+
+// 로그인
+app.post("/login", (req, res) => {
+  // 요청된 이메일 데이터베이스에서 찾기
+  User.findOne({ email: req.body.email }, (err, user) => {
+    if (!user) {
+      return res.json({
+        loginSuccess: false,
+        message: "제공된 이메일에 해당하는 유저가 없습니다.",
+      });
+    }
+    // 요청된 이메일이 데이터베이스에 있다면 비밀번호 일치 확인
+    user.compatePassword(req.body.password, (err, isMatch) => {
+      if (!isMatch)
+        return res.json({
+          loginSuccess: false,
+          message: "비밀번호가 틀렸습니다.",
+        });
+
+      // 비밀번호 일치 시 토큰 생성
+      user.generateToken((err, user) => {
+        // 후술
+      });
+    });
+  });
+});
+
 app.listen(port, () => console.log(`Example app listeming on port ${port}!`));

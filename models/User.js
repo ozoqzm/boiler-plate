@@ -34,6 +34,7 @@ const userSchema = mongoose.Schema({
   },
 });
 
+// save 전 function 실행
 userSchema.pre("save", function (next) {
   var user = this;
 
@@ -49,8 +50,20 @@ userSchema.pre("save", function (next) {
         next();
       });
     });
+  } else {
+    // 비밀번호 아닌 다른 정보 변경 시 넘겨준다
+    next();
   }
 });
+
+// comparePassword 생성
+// plain text로 들어온 입력을 암호화하여 비교. bcrypt.compare 사용
+userSchema.methods.comparePassword = function (plainPassword, cb) {
+  bcrypt.compare(plainPassword, this.password, function (err, isMatch) {
+    if (err) return cb(err);
+    cb(null, isMatch);
+  });
+};
 
 // 스키마를 모델로 감싸주기
 const User = mongoose.model("User", userSchema);
