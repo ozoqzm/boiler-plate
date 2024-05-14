@@ -82,6 +82,28 @@ userSchema.methods.generateToken = function () {
   return user.save().then(() => token);
 };
 
+// JWT 토큰 검증 및 사용자 찾기 메서드
+userSchema.statics.findByToken = function (token) {
+  const user = this;
+
+  return new Promise((resolve, reject) => {
+    jwt.verify(token, secretToken, (err, decoded) => {
+      if (err) {
+        reject(err);
+      }
+      // 유저아이디를 이용해 유저 탖은 후
+      // client의 token과 DB token 일치하는지 확인
+      User.findOne({ _id: decoded.userId, token: token }) // 'User'로 수정
+        .then((user) => {
+          resolve(user);
+        })
+        .catch((err) => {
+          reject(err);
+        });
+    });
+  });
+};
+
 // 스키마 모델로 감싸줌
 const User = mongoose.model("User", userSchema);
 

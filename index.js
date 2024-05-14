@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const cookieParser = require("cookie-parser");
 const config = require("./config/key");
-
+const { auth } = require("./middleware/auth"); // auth: 콜백함수 품고있는 객체, {auth}: 객체안의 콜백함수
 const { User } = require("./models/User");
 
 app.use(express.json()); //For JSON requests
@@ -62,6 +62,34 @@ app.post("/api/users/login", async (req, res) => {
       .json({ loginSuccess: true, userId: user._id });
   } catch (err) {
     return res.status(400).send(err);
+  }
+});
+
+// auth라는 moiddleware
+app.get("/api/users/auth", auth, (req, res) => {
+  // 여기까지 미들웨어를 통과해 왔다는 건 Authentication이 True라는 의미
+
+  res.status(200).json({
+    _id: req.user._id,
+    isAdmin: req.user.role === 0 ? false : true, // 0이면 일반 유저 아니면 관리자
+    isAuth: true, // ?
+    email: req.user.email,
+    name: req.user.name,
+    lastname: req.user.lastname,
+    role: req.user.role,
+    image: req.user.image,
+  });
+});
+
+app.get("/api/users/logout", auth, async (req, res) => {
+  try {
+    await User.findOneAndUpdate({ _id: req.user._id }, { token: "" });
+
+    return res.status(200).send({
+      success: true,
+    });
+  } catch (err) {
+    return res.json({ success: false, err });
   }
 });
 
