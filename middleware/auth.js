@@ -4,7 +4,7 @@ const auth = async (req, res, next) => {
   // 인증 처리 수행
   try {
     // 클라이언트 쿠키에서 토큰 가져옴
-    const token = req.cookies.user_auth;
+    const token = req.cookies.x_auth;
 
     if (!token) {
       return res.json({ isAuth: false, error: true });

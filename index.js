@@ -57,7 +57,7 @@ app.post("/api/users/login", async (req, res) => {
     const token = await user.generateToken();
     // 쿠키 저장
     res
-      .cookie("user_auth", token)
+      .cookie("x_auth", token)
       .status(200)
       .json({ loginSuccess: true, userId: user._id });
   } catch (err) {
