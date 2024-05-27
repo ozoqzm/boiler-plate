@@ -9,6 +9,9 @@ app.use(express.json()); //For JSON requests
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+// const cors = require("cors");
+// app.use(cors());
+
 const mongoose = require("mongoose");
 mongoose
   .connect(config.mongoURI)
@@ -91,6 +94,11 @@ app.get("/api/users/logout", auth, async (req, res) => {
   } catch (err) {
     return res.json({ success: false, err });
   }
+});
+
+// test
+app.get("/api/hello", (req, res) => {
+  res.send("Hello World!~~ ");
 });
 
 const port = 5000;
